@@ -1,0 +1,111 @@
+﻿<Window x:Class="ShuffleiTunesPlaylist.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Shuffle iTunes Playlist" Height="600" Width="800" ResizeMode="CanResizeWithGrip" Icon="ShuffleiTunesPlaylist.ico">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="15"/>
+        </Grid.RowDefinitions>
+        <Menu VerticalAlignment="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="Exit" Command="{Binding ExitCommand}"/>
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem Header="Aboug" Command="{Binding AboutCommand}"/>
+            </MenuItem>
+        </Menu>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TreeView ItemsSource="{Binding Playlists}" Margin="8" SelectedItemChanged="TreeView_SelectedItemChanged" BorderThickness="0">
+                    <TreeView.ItemContainerStyle>
+                        <!-- 
+                        This Style binds a TreeViewItem to a PersonViewModel. 
+                        -->
+                        <Style TargetType="{x:Type TreeViewItem}">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                            <Setter Property="FontWeight" Value="Normal" />
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image x:Name="theImage" Width="16" Height="16" Margin="3,0"  Source="Resources\Images\Music_Note_Double_16.png"/>
+                                <TextBlock Text="{Binding Name}" />
+                            </StackPanel>
+                            <HierarchicalDataTemplate.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding IsFolder}" Value="True" />
+                                        <Condition Binding="{Binding IsExpanded}" Value="False" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter TargetName="theImage" Property="Source" Value="Resources\Images\Folder_16x16.png"/>
+                                </MultiDataTrigger>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding IsFolder}" Value="True" />
+                                        <Condition Binding="{Binding IsExpanded}" Value="True" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter TargetName="theImage" Property="Source" Value="Resources\Images\FolderOpen_16x16_72.png"/>
+                                </MultiDataTrigger>
+                            </HierarchicalDataTemplate.Triggers>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+                <Button Content="Shuffle" HorizontalAlignment="Center" VerticalAlignment="Top" Width="75" Grid.Row="1" Command="{Binding ShuffleCommand}"/>
+            </Grid>
+            <DataGrid Grid.Column="1" ItemsSource="{Binding Tracks}" AutoGenerateColumns="False"
+                      CanUserReorderColumns="True" CanUserResizeColumns="True" 
+                      CanUserResizeRows="False" CanUserSortColumns="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header=" " Binding="{Binding Index}"/>
+                    <DataGridCheckBoxColumn Header="X" Binding="{Binding Enabled, Mode=OneWay}"/>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                    <DataGridTextColumn Header="Time" Binding="{Binding Time}"/>
+                    <DataGridTextColumn Header="Artist" Binding="{Binding Artist}"/>
+                    <DataGridTextColumn Header="Album" Binding="{Binding Album}"/>
+                    <DataGridTextColumn Header="Genre" Binding="{Binding Genre}"/>
+                    <DataGridTextColumn Header="Rating" Binding="{Binding Rating}"/>
+                    <DataGridTextColumn Header="Plays" Binding="{Binding PlayedCount}"/>
+                    <DataGridTextColumn Header="BitRate" Binding="{Binding BitRate}" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="BPM" Binding="{Binding BPM}" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="Comment" Binding="{Binding Comment}" Visibility="Collapsed"/>
+                    <DataGridCheckBoxColumn Header="Compilation" Binding="{Binding Compilation, Mode=OneWay}" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="Composer" Binding="{Binding Composer}" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="DateAdded" Binding="{Binding DateAdded}" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="DiscCount" Binding="{Binding DiscCount}" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="DiscNumber" Binding="{Binding DiscNumber}" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="Duration" Binding="{Binding Duration}" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="EQ" Binding="{Binding EQ}" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="Grouping" Binding="{Binding Grouping}" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="Kind" Binding="{Binding KindAsString}" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="ModificationDate" Binding="{Binding ModificationDate}" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="PlayedDate" Binding="{Binding PlayedDate}" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="SampleRate" Binding="{Binding SampleRate}" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="Size" Binding="{Binding Size}" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="TrackCount" Binding="{Binding TrackCount}" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="TrackNumber" Binding="{Binding TrackNumber}" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="VolumeAdjustment" Binding="{Binding VolumeAdjustment}" Visibility="Collapsed"/>
+                    <DataGridTextColumn Header="Year" Binding="{Binding Year}" Visibility="Collapsed"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+        <StatusBar Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+    </Grid>
+</Window>
