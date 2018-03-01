@@ -6,46 +6,63 @@ using iTunesLib;
 
 namespace ShuffleiTunesPlaylist.Utilities
 {
-    class iTunesUtil
+    internal class iTunesUtil
     {
+        private class PersistentId
+        {
+            private readonly int _mLowId;
+            private readonly int _mHighId;
+
+            public PersistentId(IITTrack track)
+            {
+                App.iTunes.GetITObjectPersistentIDs(track, out var highId, out var lowId);
+                _mHighId = highId;
+                _mLowId = lowId;
+            }
+
+            public IITTrack GetTrackFromList(IITTrackCollection tracks)
+            {
+                return tracks.ItemByPersistentID[_mHighId, _mLowId];
+            }
+        }
+
         public static IITUserPlaylist ShufflePlayList(IITUserPlaylist playlist)
         {
             IITTrackCollection tracks = playlist.Tracks;
             Random rndm = new Random((int)DateTime.Now.Ticks);
-            int nTracks = tracks.Count;
+            var nTracks = tracks.Count;
 
             // Generate shuffled track order
-            int[] shuffle = new int[nTracks];
-            for (int n = 0; n < nTracks; n++) { shuffle[n] = n + 1; }
-            for (int n = 0; n < nTracks; n++)
+            var shuffle = new int[nTracks];
+            for (var n = 0; n < nTracks; n++) { shuffle[n] = n; }
+            for (var n = 0; n < nTracks; n++)
             {
-                int i1 = rndm.Next(nTracks);
-                int i2 = rndm.Next(nTracks);
-                int t = shuffle[i1];
+                var i1 = rndm.Next(nTracks);
+                var i2 = rndm.Next(nTracks);
+                var t = shuffle[i1];
                 shuffle[i1] = shuffle[i2];
                 shuffle[i2] = t;
             }
 
-            // Create temporary playlist
-            string plName = playlist.Name;
-            string tplName = string.Format("{0}_shfl",plName);
-            IITUserPlaylist parent = playlist.get_Parent();
-            IITUserPlaylist pl1 = (parent == null) ? App.iTunes.CreatePlaylist(tplName) as IITUserPlaylist : parent.CreatePlaylist(tplName) as IITUserPlaylist;
-            // populate playlist with shuffled track order
-            for (int n = 0; n < nTracks; n++)
+            var sourceTracks = new List<PersistentId>();
+            foreach (IITTrack trk in tracks)
             {
-                IITTrack trk = tracks[shuffle[n]];
-                pl1.AddTrack(trk);
+                sourceTracks.Add(new PersistentId(trk));
             }
 
-            // delete original playlist
-            playlist.Delete();
+            foreach (var id in sourceTracks)
+            {
+                var trk = id.GetTrackFromList(playlist.Tracks);
+                trk.Delete();
+            }
 
-            // rename new playlist to original name
-            pl1.Name = plName;
+            for (var n = 0; n < nTracks;n++)
+            {
+                var trk = sourceTracks[shuffle[n]].GetTrackFromList(App.iTunes.LibraryPlaylist.Tracks);
+                playlist.AddTrack(trk);
+            }
 
-            // Retuen new playlist so tree can be updated.
-            return pl1;
+            return playlist;
         }
     }
 }
