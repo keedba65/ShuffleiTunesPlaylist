@@ -6,45 +6,80 @@ using iTunesLib;
 
 namespace ShuffleiTunesPlaylist.Model
 {
-    class CTrack
+    internal class CTrack
     {
-        private IITTrack _track = null;
         public CTrack(IITTrack track)
         {
-            _track = track;
+            if (track == null)
+            {
+                return;
+            }
+
+            Album = track.Album;
+            Artist = track.Artist;
+            BitRate = track.BitRate;
+            BPM = track.BPM;
+            Comment = track.Comment;
+            Compilation = track.Compilation;
+            Composer = track.Composer;
+            DateAdded = track.DateAdded;
+            DiscCount = track.DiscCount;
+            DiscNumber = track.DiscNumber;
+            Duration = track.Duration;
+            Enabled = track.Enabled;
+            EQ = track.EQ;
+            Finish = track.Finish;
+            Genre = track.Genre;
+            Grouping = track.Grouping;
+            Index = track.Index;
+            KindAsString = track.KindAsString;
+            ModificationDate = track.ModificationDate;
+            Name = track.Name;
+            PlayedCount = track.PlayedCount;
+            PlayedDate = track.PlayedDate;
+            PlayOrderIndex = track.PlayOrderIndex;
+            Rating = track.Rating;
+            SampleRate = track.SampleRate;
+            Size = track.Size;
+            Start = track.Start;
+            Time = track.Time;
+            TrackCount = track.TrackCount;
+            TrackNumber = track.TrackNumber;
+            VolumeAdjustment = track.VolumeAdjustment;
+            Year = track.Year;
         }
 
-        public string Album { get { return _track == null ? "" : _track.Album; } }
-        public string Artist { get { return _track == null ? "" : _track.Artist; } }
-        public int BitRate { get { return _track == null ? 0 : _track.BitRate; } }
-        public int BPM { get { return _track == null ? 0 : _track.BPM; } }
-        public string Comment { get { return _track == null ? "" : _track.Comment; } }
-        public bool Compilation { get { return _track == null ? false : _track.Compilation; } }
-        public string Composer { get { return _track == null ? "" : _track.Composer; } }
-        public DateTime DateAdded { get { return _track == null ? DateTime.MinValue : _track.DateAdded; } }
-        public int DiscCount { get { return _track == null ? 0 : _track.DiscCount; } }
-        public int DiscNumber { get { return _track == null ? 0 : _track.DiscNumber; } }
-        public int Duration { get { return _track == null ? 0 : _track.Duration; } }
-        public bool Enabled { get { return _track == null ? false : _track.Enabled; } }
-        public string EQ { get { return _track == null ? "" : _track.EQ; } }
-        public int Finish { get { return _track == null ? 0 : _track.Finish; } }
-        public string Genre { get { return _track == null ? "" : _track.Genre; } }
-        public string Grouping { get { return _track == null ? "" : _track.Grouping; } }
-        public int Index { get { return _track == null ? 0 : _track.Index; } }
-        public string KindAsString { get { return _track == null ? "" : _track.KindAsString; } }
-        public DateTime ModificationDate { get { return _track == null ? DateTime.MinValue : _track.ModificationDate; } }
-        public string Name { get { return _track == null ? "" : _track.Name; } }
-        public int PlayedCount { get { return _track == null ? 0 : _track.PlayedCount; } }
-        public DateTime PlayedDate { get { return _track == null ? DateTime.MinValue : _track.PlayedDate; } }
-        public int PlayOrderIndex { get { return _track == null ? 0 : _track.PlayOrderIndex; } }
-        public int Rating { get { return _track == null ? 0 : _track.Rating; } }
-        public int SampleRate { get { return _track == null ? 0 : _track.SampleRate; } }
-        public int Size { get { return _track == null ? 0 : _track.Size; } }
-        public int Start { get { return _track == null ? 0 : _track.Start; } }
-        public string Time { get { return _track == null ? "" : _track.Time; } }
-        public int TrackCount { get { return _track == null ? 0 : _track.TrackCount; } }
-        public int TrackNumber { get { return _track == null ? 0 : _track.TrackNumber; } }
-        public int VolumeAdjustment { get { return _track == null ? 0 : _track.VolumeAdjustment; } }
-        public int Year { get { return _track == null ? 0 : _track.Year; } }
+        public string Album { get; set; }
+        public string Artist { get; set; }
+        public int BitRate { get; set; }
+        public int BPM { get; set; }
+        public string Comment { get; set; }
+        public bool Compilation { get; set; }
+        public string Composer { get; set; }
+        public DateTime DateAdded { get; set; } = DateTime.MinValue;
+        public int DiscCount { get; set; }
+        public int DiscNumber { get; set; }
+        public int Duration { get; set; }
+        public bool Enabled { get; set; }
+        public string EQ { get; set; }
+        public int Finish { get; set; }
+        public string Genre { get; set; }
+        public string Grouping { get; set; }
+        public int Index { get; set; }
+        public string KindAsString { get; set; }
+        public DateTime ModificationDate { get; set; } = DateTime.MinValue;
+        public string Name { get; set; }
+        public int PlayedCount { get; set; }
+        public DateTime PlayedDate { get; set; } = DateTime.MinValue;
+        public int PlayOrderIndex { get; set; }
+        public int Rating { get; set; }
+        public int SampleRate { get; set; }
+        public int Size { get; set; }
+        public int Start { get; set; }
+        public string Time { get; set; }
+        public int TrackCount { get; set; }
+        public int TrackNumber { get; set; }
+        public int VolumeAdjustment { get; set; }
+        public int Year { get; set; }
     }
 }

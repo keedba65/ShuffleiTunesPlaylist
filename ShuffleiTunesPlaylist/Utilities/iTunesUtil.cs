@@ -16,7 +16,7 @@ namespace ShuffleiTunesPlaylist.Utilities
 
             // Generate shuffled track order
             int[] shuffle = new int[nTracks];
-            for (int n = 0; n < nTracks; n++) shuffle[n] = n + 1;
+            for (int n = 0; n < nTracks; n++) { shuffle[n] = n + 1; }
             for (int n = 0; n < nTracks; n++)
             {
                 int i1 = rndm.Next(nTracks);
