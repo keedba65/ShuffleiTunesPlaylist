@@ -14,20 +14,13 @@ namespace ShuffleiTunesPlaylist.ViewModel
 {
     class MainWindowVM : BaseWindowViewModel
     {
-        readonly ObservableCollection<CPlaylistVM> _playlists;
         readonly CPlaylistVM _rootPlaylist;
-        ObservableCollection<CTrack> _tracks;
 
         public MainWindowVM(CPlaylist rootPlaylist)
         {
             _rootPlaylist = new CPlaylistVM(rootPlaylist);
 
-            _playlists = new ObservableCollection<CPlaylistVM>(_rootPlaylist.Children);
-            //_playlists = new ObservableCollection<CPlaylistVM>(
-            //    new CPlaylistVM[] 
-            //    { 
-            //        _rootPlaylist 
-            //    });
+            Playlists = new ObservableCollection<CPlaylistVM>(_rootPlaylist.Children);
             InitCommands();
         }
 
@@ -37,40 +30,39 @@ namespace ShuffleiTunesPlaylist.ViewModel
         /// Returns a read-only collection containing the first person 
         /// in the family tree, to which the TreeView can bind.
         /// </summary>
-        public ObservableCollection<CPlaylistVM> Playlists
-        {
-            get { return _playlists; }
-        }
+        public ObservableCollection<CPlaylistVM> Playlists { get; }
 
         #endregion // Playlists
 
-        public ObservableCollection<CTrack> Tracks { get { return _tracks; } }
+        public ObservableCollection<CTrack> Tracks { get; private set; }
 
         public CPlaylistVM SelectedPlaylist { get; set; }
 
         #region Commands
-        RelayCommand _ExitCommand;
-        RelayCommand _AboutCommand;
-        RelayCommand _ShuffleCommand;
-        RelayCommand _SelectionChanged;
-        public ICommand ExitCommand { get { return _ExitCommand; } }
-        public ICommand AboutCommand { get { return _AboutCommand; } }
-        public ICommand ShuffleCommand { get { return _ShuffleCommand; } }
-        public ICommand SelectionChanged { get { return _SelectionChanged; } }
-        void InitCommands()
+        private RelayCommand _mExitCommand;
+        private RelayCommand _mAboutCommand;
+        private RelayCommand _mShuffleCommand;
+        private RelayCommand _mSelectionChanged;
+
+        public ICommand ExitCommand => _mExitCommand;
+        public ICommand AboutCommand => _mAboutCommand;
+        public ICommand ShuffleCommand => _mShuffleCommand;
+        public ICommand SelectionChanged => _mSelectionChanged;
+
+        private void InitCommands()
         {
-            _ExitCommand = new RelayCommand(param => DoExitCommand());
-            _AboutCommand = new RelayCommand(param => DoAboutCommand());
-            _ShuffleCommand = new RelayCommand(param => DoShuffleCommand(), o => CanShuffleCommand());
-            _SelectionChanged = new RelayCommand(DoSelectionChanged);
+            _mExitCommand = new RelayCommand(param => DoExitCommand());
+            _mAboutCommand = new RelayCommand(param => DoAboutCommand());
+            _mShuffleCommand = new RelayCommand(param => DoShuffleCommand(), o => CanShuffleCommand());
+            _mSelectionChanged = new RelayCommand(DoSelectionChanged);
         }
 
-        void DoExitCommand()
+        private void DoExitCommand()
         {
             CloseCommand.Execute(null);
         }
 
-        void DoAboutCommand()
+        private void DoAboutCommand()
         {
             //About dlg = new About();
             //dlg.Owner = App.Current.MainWindow;
@@ -86,41 +78,46 @@ namespace ShuffleiTunesPlaylist.ViewModel
             return false;
         }
 
-        void DoShuffleCommand()
+        private void DoShuffleCommand()
         {
-            if (SelectedPlaylist != null)
+            if (SelectedPlaylist == null)
             {
-                CPlaylistVM pl = SelectedPlaylist;
-                pl.Playlist = iTunesUtil.ShufflePlayList(pl.Playlist);
-                pl.UpdateChildren();
-                DoSelectionChanged(null);
-                DoSelectionChanged(pl);
+                return;
             }
+
+            var pl = SelectedPlaylist;
+            var newPl = iTunesUtil.ShufflePlayList(pl.IPlaylist);
+            var playlist = new CPlaylist(newPl);
+            pl.UpdatePlaylist(playlist);
+            DoSelectionChanged(null);
+            DoSelectionChanged(pl);
         }
 
-        void DoSelectionChanged(object selectedPlaylist)
+        private void DoSelectionChanged(object selectedPlaylist)
         {
-            CPlaylistVM pl = selectedPlaylist as CPlaylistVM;
-            if (pl != SelectedPlaylist)
+            var pl = selectedPlaylist as CPlaylistVM;
+            if (pl == SelectedPlaylist)
             {
-                bool clear = true;
-                SelectedPlaylist = pl;
-                if (SelectedPlaylist != null)
-                {
-                    if (!SelectedPlaylist.IsFolder)
-                    {
-                        CTracks tracks = CTracksBroker.LoadTracks(SelectedPlaylist.Playlist.Tracks);
-                        _tracks = null;
-                        _tracks = new ObservableCollection<CTrack>(tracks.Tracks);
-                        clear = false;
-                    }
-                }
-                if (clear)
-                {
-                    _tracks = null;
-                }
-                OnPropertyChanged("Tracks");
+                return;
             }
+
+            var clear = true;
+            SelectedPlaylist = pl;
+            if (SelectedPlaylist != null)
+            {
+                if (!SelectedPlaylist.IsFolder)
+                {
+                    var tracks = CTracksBroker.LoadTracks(SelectedPlaylist.IPlaylist.Tracks);
+                    Tracks = null;
+                    Tracks = new ObservableCollection<CTrack>(tracks.Tracks);
+                    clear = false;
+                }
+            }
+            if (clear)
+            {
+                Tracks = null;
+            }
+            OnPropertyChanged("Tracks");
         }
 
         #endregion

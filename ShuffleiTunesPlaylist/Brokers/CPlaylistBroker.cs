@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using iTunesLib;
 using ShuffleiTunesPlaylist.Model;
+using ShuffleiTunesPlaylist.Utilities;
 
 namespace ShuffleiTunesPlaylist.Brokers
 {
@@ -12,28 +13,21 @@ namespace ShuffleiTunesPlaylist.Brokers
     {
         public static CPlaylist LoadPlaylists(iTunesApp itunes)
         {
-            CPlaylist retPlaylist = new CPlaylist(null);
-            IITSourceCollection sources = itunes.Sources;
-            IITPlaylistCollection playlists = null;
-            IITSource plSource = null;
-            foreach (IITSource source in sources)
+            var retPlaylist = new CPlaylist(null);
+            var playlists = iTunesUtil.GetPlaylistCollection(itunes);
+            if (playlists == null)
             {
-                if (source.Kind == ITSourceKind.ITSourceKindLibrary)
-                {
-                    plSource = source;
-                    playlists = source.Playlists;
-                    break;
-                }
+                return retPlaylist;
+
             }
             foreach (IITPlaylist pl in playlists)
             {
-                if (pl.Kind != ITPlaylistKind.ITPlaylistKindUser) continue;
+                if (pl.Kind != ITPlaylistKind.ITPlaylistKindUser) {continue;}
                 try
                 {
                     IITUserPlaylist upl = (IITUserPlaylist)pl;
-                    if (upl.Smart) continue;
-                    if (upl.SpecialKind == ITUserPlaylistSpecialKind.ITUserPlaylistSpecialKindPodcasts) continue;
-                    string strDir = string.Empty;
+                    if (upl.Smart) {continue;}
+                    if (upl.SpecialKind == ITUserPlaylistSpecialKind.ITUserPlaylistSpecialKindPodcasts) {continue;}
                     Stack<IITUserPlaylist> parentStack = new Stack<IITUserPlaylist>();
                     IITUserPlaylist uplp = upl.get_Parent();
                     if (uplp != null)

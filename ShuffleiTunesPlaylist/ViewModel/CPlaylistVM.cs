@@ -10,10 +10,10 @@ namespace ShuffleiTunesPlaylist.ViewModel
 {
     class CPlaylistVM : BaseWindowViewModel
     {
-            #region Data
+        #region Data
 
         ObservableCollection<CPlaylistVM> _children;
-        CPlaylistVM _parent;
+        readonly CPlaylistVM _parent;
         CPlaylist _playlist;
 
         bool _isExpanded;
@@ -36,7 +36,7 @@ namespace ShuffleiTunesPlaylist.ViewModel
             UpdateChildren();
         }
 
-        public void UpdateChildren()
+        private void UpdateChildren()
         {
             _children = null;
             _children = new ObservableCollection<CPlaylistVM>(
@@ -46,24 +46,26 @@ namespace ShuffleiTunesPlaylist.ViewModel
             OnPropertyChanged("Children");
         }
 
+        public void UpdatePlaylist(CPlaylist playlist)
+        {
+            _playlist = playlist;
+            UpdateChildren();
+        }
+
         #endregion // Constructors
 
         #region Person Properties
 
-        public ObservableCollection<CPlaylistVM> Children
-        {
-            get { return _children; }
-        }
+        public ObservableCollection<CPlaylistVM> Children => _children;
 
-        public string Name
-        {
-            get { return _playlist == null ? "" : _playlist.Name; }
-        }
+        public string Name => _playlist == null ? "" : _playlist.Name;
 
-        public bool IsFolder { get { return _playlist == null ? false : _playlist.IsFolder; } }
+        public bool IsFolder => _playlist?.IsFolder ?? false;
 
-        public IITUserPlaylist Playlist { get { return _playlist == null ? null : _playlist.Playlist; } set { if (_playlist != null) _playlist.Playlist = value; } }
+        public CPlaylist Playlist => _playlist;
 
+        //public IITUserPlaylist Playlist { get { return _playlist == null ? null : _playlist.Playlist; } set { if (_playlist != null) _playlist.Playlist = value; } }
+        public IITUserPlaylist IPlaylist => _playlist?.Playlist;
         #endregion // Person Properties
 
         #region Presentation Members
