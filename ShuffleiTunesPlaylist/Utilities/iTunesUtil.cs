@@ -50,25 +50,45 @@ namespace ShuffleiTunesPlaylist.Utilities
                 var tplName = $"{playlist.Name}_shfl";
                 var parent = playlist.get_Parent();
                 var pl1 = (parent == null) ? App.iTunes.CreatePlaylist(tplName) as IITUserPlaylist : parent.CreatePlaylist(tplName) as IITUserPlaylist;
-                for (var n = 0; n < nTracks; n++)
+
+                try
                 {
-                    var trk = sourceTracks[shuffle[n]].GetTrackFromList(App.iTunes.LibraryPlaylist.Tracks);
-                    pl1?.AddTrack(trk);
+                    for (var n = 0; n < nTracks; n++)
+                    {
+                        var trk = sourceTracks[shuffle[n]].GetTrackFromList(App.iTunes.LibraryPlaylist.Tracks);
+                        pl1?.AddTrack(trk);
+                    }
+
+                    // Delete original tracks
+                    foreach (var id in sourceTracks)
+                    {
+                        var trk = id.GetTrackFromList(playlist.Tracks);
+                        trk?.Delete();
+                    }
+
+                    // Add shuffled tracks back to original playlist
+                    for (var n = 0; n < nTracks; n++)
+                    {
+                        var trk = sourceTracks[shuffle[n]].GetTrackFromList(App.iTunes.LibraryPlaylist.Tracks);
+                        playlist.AddTrack(trk);
+                    }
+                }
+                finally
+                {
+                    // Always try to delete the temp playlist, even if an error occurs
+                    if (pl1 != null)
+                    {
+                        try
+                        {
+                            pl1.Delete();
+                        }
+                        catch
+                        {
+                            // Silently fail if deletion doesn't work
+                        }
+                    }
                 }
 
-                foreach (var id in sourceTracks)
-                {
-                    var trk = id.GetTrackFromList(playlist.Tracks);
-                    trk.Delete();
-                }
-
-                for (var n = 0; n < nTracks; n++)
-                {
-                    var trk = sourceTracks[shuffle[n]].GetTrackFromList(App.iTunes.LibraryPlaylist.Tracks);
-                    playlist.AddTrack(trk);
-                }
-
-                pl1?.Delete();
                 return playlist;
             }
             catch (Exception e)

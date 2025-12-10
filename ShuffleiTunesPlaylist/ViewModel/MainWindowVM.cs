@@ -87,8 +87,7 @@ namespace ShuffleiTunesPlaylist.ViewModel
 
             var pl = SelectedPlaylist;
             var newPl = iTunesUtil.ShufflePlayList(pl.IPlaylist);
-            var playlist = new CPlaylist(newPl);
-            pl.UpdatePlaylist(playlist);
+            
             DoSelectionChanged(null);
             DoSelectionChanged(pl);
         }
